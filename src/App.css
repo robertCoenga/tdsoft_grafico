@@ -1,0 +1,21 @@
+html,
+body,
+.App {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.App .controles {
+  display: flex;
+  gap: 2em;
+  padding-top: 2em;
+}
