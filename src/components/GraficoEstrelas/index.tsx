@@ -49,6 +49,12 @@ export function GraficoEstrelas(props) {
 
 }
 
+const alterarTipoDado = (dados, transformacao) => {
+  dados[0].data.forEach((dado) => {
+    dado.y = transformacao(dado.y);
+  });
+  return dados;
+} 
 
 
 // Definição dos tipos das propriedades recebidas.
