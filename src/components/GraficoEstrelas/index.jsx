@@ -50,8 +50,11 @@ const agrupamentoDados = (dados, agrupamento) => {
 
 export function GraficoEstrelas(props) {
   let dadosAgrupados = agrupamentoDados(props.estrelas, props.agrupamento);
+  let normalizado = dadosAgrupados;
+  if(props.escala=== 'log')
+  normalizado = alterarTipoDado(dadosAgrupados, Math.log);
 
-  return  <LineChart width={1600} height={600} data={dadosAgrupados[0].data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+  return  <LineChart width={2000} height={600} data={dadosAgrupados[0].data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
   <Line type="monotone" dataKey="y" stroke="#8884d8" />
   <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
   <XAxis dataKey="x" />
@@ -60,6 +63,13 @@ export function GraficoEstrelas(props) {
 </LineChart>
 
 }
+
+const alterarTipoDado = (dados, transformacao) => {
+  dados[0].data.forEach((dado) => {
+    dado.y = transformacao(dado.y);
+  });
+  return dados;
+} 
 
 
 
