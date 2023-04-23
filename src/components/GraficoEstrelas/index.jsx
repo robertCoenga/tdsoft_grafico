@@ -54,7 +54,7 @@ export function GraficoEstrelas(props) {
   if(props.escala=== 'log')
   normalizado = alterarTipoDado(dadosAgrupados, Math.log);
 
-  return  <LineChart width={2000} height={600} data={dadosAgrupados[0].data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+  return  <LineChart width={2000} height={600} data={normalizado[0].data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
   <Line type="monotone" dataKey="y" stroke="#8884d8" />
   <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
   <XAxis dataKey="x" />
