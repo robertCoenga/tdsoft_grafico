@@ -1,102 +1,63 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
-};
 
-const agrupamentoDados = (dados,agrupamento) => {
-  let agroupData =[];
-
-  const result = dados.reduce((acc,dado)=>{
-    if(agrupamento=="dia")
-    {
-      agroupData = dado.starred_at.toLocaleDateString();
-    }else if(agrupamento=="semana")
-    {
+const agrupamentoDados = (dados, agrupamento) => {
+  let data = [];
+  const estrelas = dados.reduce((acc, dado) => {
+    if (agrupamento === 'dia') {
+      data = dado.starred_at.toLocaleDateString();
+    } else if (agrupamento === 'mes') {
+      data = dado.starred_at.toLocaleDateString('pt-BR', { month: 'numeric', year: 'numeric' });
+    } else if (agrupamento === 'ano') {
+      data = dado.starred_at.toLocaleDateString('pt-BR', { year: 'numeric' });
+    }
+    // agrupar por ano-semana
+    else if (agrupamento === 'semana') {
       const ano = dado.starred_at.getFullYear();
       const dia = dado.starred_at.getDate();
       const mes = dado.starred_at.getMonth();
-      agroupData = new Date(ano, mes, dia);
-      const diaSemana = agroupData.getDay();
-      const primeiroDiaSemana = agroupData.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+      data = new Date(ano, mes, dia);
+      const diaSemana = data.getDay();
+      const primeiroDiaSemana = data.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
       const dataInicioSemana = new Date(data.setDate(primeiroDiaSemana));
       const dataFimSemana = new Date(dataInicioSemana);
       dataFimSemana.setDate(dataFimSemana.getDate() + 6);
-      agroupData = `${dataInicioSemana.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric', year: 'numeric' })}-${dataFimSemana.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric', year: 'numeric' })}`;
-   
-    }else if(agrupamento=="mês")
-    {
-      agroupData = dado.starred_at.toLocaleDateString('pt-Br', {month: 'numeric', year: 'numeric'});
-    }else if(agrupamento=="ano")
-    {
-      agroupData = dado.starred_at.toLocaleDateString('pt-Br', { year: 'numeric'});
+      data = `${dataInicioSemana.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric', year: 'numeric' })}-${dataFimSemana.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric', year: 'numeric' })}`;
     }
 
-
-     if (acc[agroupData]) {
-      acc[agroupData] += 1;
+    if (acc[data]) {
+      acc[data] += 1;
     } else {
-      acc[agroupData] = 1;
+      acc[data] = 1;
     }
     return acc;
   }, {});
 
-  agroupData = Object.keys(result).map((key) => ({
+  data = Object.keys(estrelas).map((key) => ({
     x: key,
-    y: result[key]
+    y: estrelas[key]
   }));
 
   return [
     {
-      id: 'Quantidade de estrelas',
       data
     }
   ];
-
 }
 
 export function GraficoEstrelas(props) {
-  const label =["Segunda","Terça","Quarta"];
-  const data={
-    labels:label,
-    datasets: [{
-        label: 'Dataset 1',
-        data: [1, 5 , 7 , 8 , 11],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)'}]
-  }
-  return <div><Line options={options} data={data}/></div>
+  let dadosAgrupados = agrupamentoDados(props.estrelas, props.agrupamento);
+
+  return  <LineChart width={1600} height={600} data={dadosAgrupados[0].data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+  <Line type="monotone" dataKey="y" stroke="#8884d8" />
+  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+  <XAxis dataKey="x" />
+  <YAxis />
+  <Tooltip />
+</LineChart>
 
 }
 
